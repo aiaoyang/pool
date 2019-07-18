@@ -25,7 +25,7 @@ and use `pool` as the package name inside the code.
 
 ```go
 // create a factory() to be used with channel based pool
-factory    := func() (io.Closer, error) { return net.Dial("tcp", "127.0.0.1:4000") }
+factory    := func() (ldap.Client, error) { return net.Dial("tcp", "127.0.0.1:4000") }
 
 // create a new channel based pool with an initial capacity of 5 and maximum
 // capacity of 30. The factory will create 5 initial connections and put it

@@ -15,7 +15,7 @@ var (
 	MaximumCap = 30
 	network    = "tcp"
 	address    = "127.0.0.1:7777"
-	factory    = func() (io.Closer, error) { return net.Dial(network, address) }
+	factory    = func() (ldap.Client, error) { return net.Dial(network, address) }
 )
 
 func init() {
@@ -95,7 +95,7 @@ func TestPool_Put(t *testing.T) {
 	defer p.Close()
 
 	// get/create from the pool
-	conns := make([]io.Closer, MaximumCap)
+	conns := make([]ldap.Client, MaximumCap)
 	for i := 0; i < MaximumCap; i++ {
 		conn, _ := p.Get()
 		conns[i] = conn
@@ -185,7 +185,7 @@ func TestPool_Close(t *testing.T) {
 
 func TestPoolConcurrent(t *testing.T) {
 	p, _ := newChannelPool()
-	pipe := make(chan io.Closer, 0)
+	pipe := make(chan ldap.Client, 0)
 
 	go func() {
 		p.Close()

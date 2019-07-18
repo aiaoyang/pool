@@ -3,7 +3,8 @@ package pool
 
 import (
 	"errors"
-	"io"
+
+	"gopkg.in/ldap.v2"
 )
 
 var (
@@ -17,7 +18,7 @@ type Pool interface {
 	// Get returns a new connection from the pool. Closing the connections puts
 	// it back to the Pool. Closing it when the pool is destroyed or full will
 	// be counted as an error.
-	Get() (io.Closer, error)
+	Get() (ldap.Client, error)
 
 	// Close closes the pool and all its connections. After Close() the pool is
 	// no longer usable.

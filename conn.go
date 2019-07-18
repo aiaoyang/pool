@@ -1,14 +1,15 @@
 package pool
 
 import (
-	"io"
 	"sync"
+
+	"gopkg.in/ldap.v2"
 )
 
 // PoolConn is a wrapper around net.Conn to modify the the behavior of
 // net.Conn's Close() method.
 type PoolConn struct {
-	io.Closer
+	ldap.Client
 	mu       sync.RWMutex
 	c        *channelPool
 	unusable bool
@@ -20,12 +21,12 @@ func (p *PoolConn) Close() error {
 	defer p.mu.RUnlock()
 
 	if p.unusable {
-		if p.Closer != nil {
-			return p.Closer.Close()
+		if p.Client != nil {
+			return p.Client.Close()
 		}
 		return nil
 	}
-	return p.c.put(p.Closer)
+	return p.c.put(p.Client)
 }
 
 // MarkUnusable() marks the connection not usable any more, to let the pool close it instead of returning it to pool.
@@ -36,8 +37,8 @@ func (p *PoolConn) MarkUnusable() {
 }
 
 // newConn wraps a standard net.Conn to a poolConn net.Conn.
-func (c *channelPool) wrapConn(conn io.Closer) io.Closer {
+func (c *channelPool) wrapConn(conn ldap.Client) ldap.Client {
 	p := &PoolConn{c: c}
-	p.Closer = conn
+	p.Client = conn
 	return p
 }
